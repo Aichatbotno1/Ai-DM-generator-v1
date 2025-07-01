@@ -36,6 +36,11 @@ def scrape_profile(username):
     }
 
 # --- GPT DM Generation ---
+import openai
+
+# Initialize OpenAI client with v1.0+
+client = openai.OpenAI(api_key=openai_api_key)
+
 def generate_dm(profile, tone):
     prompt = f"""
 You're a social media strategist. Write a {tone.lower()} and high-converting DM for an Instagram creator.
@@ -47,12 +52,11 @@ Username: @{profile['username']}
 Make it sound human, helpful, and actionable.
 """
     try:
-        response = openai.ChatCompletion.create(
-model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            api_key=openai_api_key
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}]
         )
-        return response.choices[0].message["content"].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return f"[Error generating message: {e}]"
 
